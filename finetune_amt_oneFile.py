@@ -93,8 +93,8 @@ def debug_collate_fn(features, max_token_id=55028):
     return {"input_ids": input_ids, "labels": labels}
 
 
-GPT2_MODEL_NAME = "stanford-crfm/music-medium-800k"
-CKPT_DIR = "amt_PKMN_BW_finetune_med"
+GPT2_MODEL_NAME = "stanford-crfm/music-small-800k"
+CKPT_DIR = "amt_PKMN_Harmonizer_Small"
 SEQLEN = 1024
 LR = 1e-5
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     print("total trainable params:", sum(p.numel() for p in model.parameters() if p.requires_grad))
 
     # ENTER PATH TO TOKENIZED MIDI FILES HERE
-    dataset_dict = load_tokenized_data("C:/Users/dongg/Documents/UROPSP25/PokemonTraining_BW/pokemon_midi_dataset/tokenized-events-black_white_filtered.txt")
+    dataset_dict = load_tokenized_data('./tokenized-events-pokemon_midis_transposed.txt')
     ds_train = dataset_dict["train"]
     ds_valid = dataset_dict["valid"]
 
