@@ -134,7 +134,7 @@ if __name__ == "__main__":
         per_device_eval_batch_size=16,
         warmup_steps=500,
         lr_scheduler_type="cosine",
-        max_steps=1000,
+        max_steps=3000,
         save_steps=2000,
         logging_dir="./logs",
         eval_steps=2000,
