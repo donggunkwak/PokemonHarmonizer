@@ -135,7 +135,7 @@ if __name__ == "__main__":
         warmup_steps=500,
         lr_scheduler_type="cosine",
         max_steps=3000,
-        save_steps=2000,
+        save_steps=1000,
         logging_dir="./logs",
         eval_steps=2000,
         logging_steps=10,
