@@ -15,8 +15,10 @@ from anticipation.tokenize import extract_instruments
 from anticipation.convert import events_to_midi,midi_to_events
 
 
-model_path = './amt_PKMN_Harmonizer_Small/checkpoint-3000'
-model = AutoModelForCausalLM.from_pretrained(model_path).cuda()
+model = AutoModelForCausalLM.from_pretrained(
+    "dongk19/PokemonHarmonizer",
+    subfolder="amt_PKMN_Harmonizer_Small/checkpoint-3000"
+).cuda()
 
 length = 40 # time in seconds
 # _, segment = extract_instruments(ops.clip(midi_to_events('./pokemon_midis/Hearthome-City.mid'),
