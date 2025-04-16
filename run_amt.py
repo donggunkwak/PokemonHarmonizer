@@ -16,7 +16,7 @@ from anticipation.convert import events_to_midi,midi_to_events
 
 
 model = AutoModelForCausalLM.from_pretrained(
-    "dongk19/PokemonHarmonizer",
+    "donggunkwak/PokemonHarmonizer",
     subfolder="amt_PKMN_Harmonizer_Small/checkpoint-3000"
 ).cuda()
 
