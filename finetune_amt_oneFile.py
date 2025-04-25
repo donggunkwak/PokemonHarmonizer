@@ -93,8 +93,8 @@ def debug_collate_fn(features, max_token_id=55028):
     return {"input_ids": input_ids, "labels": labels}
 
 
-GPT2_MODEL_NAME = "stanford-crfm/music-small-800k"
-CKPT_DIR = "amt_PKMN_Harmonizer_Small"
+GPT2_MODEL_NAME = "stanford-crfm/music-medium-800k"
+CKPT_DIR = "amt_PKMN_Harmonizer_Medium"
 SEQLEN = 1024
 LR = 1e-5
 
