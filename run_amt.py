@@ -10,9 +10,9 @@ from tqdm import tqdm
 from anticipation import ops
 from anticipation.config import *
 from anticipation.vocab import *
-from anticipation.sample import generate, add_token
 from anticipation.tokenize import extract_instruments
 from anticipation.convert import events_to_midi,midi_to_events
+from custom_sample import generate, add_token
 
 
 model = AutoModelForCausalLM.from_pretrained(
@@ -24,14 +24,13 @@ length = 10 # time in seconds
 # _, segment = extract_instruments(ops.clip(midi_to_events('./pokemon_midis/Hearthome-City.mid'),
 #                    0,40), [0])
 
-melody =generate(model, start_time=0, end_time=length, top_p=.98, active_instruments=[0])
+melody =generate(model, start_time=0, end_time=length, top_p=.98, active_instruments=[0], monophony=True)
 print(melody)
 
 z = [ANTICIPATE]
-z = [ANTICIPATE]
 top_p = 0.98
 tokens = []
-result = []
+# result = []
 harmonies = [[],[],[],[],[]]
 other_instruments = [1,40,41,42,43]
 current_time = 0
@@ -41,20 +40,39 @@ tokens.extend(melody)
 
 
 # we generate new notes for the first note in the melody
-for t, d, n in tqdm(zip(melody[::3], melody[1::3], melody[2::3]), total=len(melody)//3):
-    # tokens.extend([t, d, n])
-    result.extend([t-CONTROL_OFFSET, d-CONTROL_OFFSET, n-CONTROL_OFFSET])
-    for i, instr in enumerate(other_instruments):
-        new_token = add_token(model, z, tokens, top_p, current_time, active_instruments=[instr], forceTime=t-CONTROL_OFFSET, forceDuration=d-CONTROL_OFFSET)
-        tokens.extend(new_token)
-        result.extend(new_token)
-        current_time = new_token[0]
+# for t, d, n in tqdm(zip(melody[::3], melody[1::3], melody[2::3]), total=len(melody)//3):
+#     print(f"Time {t-CONTROL_OFFSET}")
+#     # tokens.extend([t, d, n])
+#     result.extend([t-CONTROL_OFFSET, d-CONTROL_OFFSET, n-CONTROL_OFFSET])
+#     for i, instr in enumerate(other_instruments):
+#         new_token = add_token(model, z, tokens, top_p, current_time, active_instruments=[instr], forceTime=t-CONTROL_OFFSET, forceDuration=d-CONTROL_OFFSET)
+#         tokens.extend(new_token)
+#         result.extend(new_token)
+#         print(f"New token: {new_token}")
+#         current_time = new_token[0]
 
-        # save harmony
-        originalNote = n - CONTROL_OFFSET - NOTE_OFFSET
-        generatedNote = (new_token[2] - NOTE_OFFSET) - (2**7)*instr
-        diff = generatedNote - originalNote
-        harmonies[i].append((new_token[0], diff))
+#         # save harmony
+#         originalNote = n - CONTROL_OFFSET - NOTE_OFFSET
+#         generatedNote = (new_token[2] - NOTE_OFFSET) - (2**7)*instr
+#         diff = generatedNote - originalNote
+#         harmonies[i].append((new_token[0], diff))
+
+t, d, _ = melody[:3]
+
+# tokens.extend([t, d, n])
+for i, instr in enumerate(other_instruments):
+    new_token = add_token(model, z, tokens, top_p, current_time, active_instruments=[instr], forceTime=t-CONTROL_OFFSET, forceDuration=d-CONTROL_OFFSET)
+    tokens.extend(new_token)
+    print(f"First chord, new token: {new_token}")
+    current_time = new_token[0]
+
+while current_time <= melody[-3] - CONTROL_OFFSET:
+    new_token = add_token(model, z, tokens, top_p, current_time, active_instruments=other_instruments)
+    tokens.extend(new_token)
+    print(f"New token: {new_token}")
+    current_time = new_token[0]
+
+result = ops.combine([x for x in tokens if x < CONTROL_OFFSET], melody)
 
 mid = events_to_midi(result)
 mid.save('generated.mid')
