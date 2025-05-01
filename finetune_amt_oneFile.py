@@ -1,4 +1,5 @@
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3" # change based on what GPUs are available on the matlaber
 import sys
 import random
 # import bitsandbytes as bnb
@@ -137,7 +138,8 @@ if __name__ == "__main__":
         max_steps=3000,
         save_steps=1000,
         logging_dir="./logs",
-        eval_steps=2000,
+        eval_steps=100,
+        evaluation_strategy="steps",
         logging_steps=10,
         bf16=True,  # Enable mixed precision
         report_to="wandb",
